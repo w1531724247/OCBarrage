@@ -524,23 +524,27 @@
     if (event.type == UIEventTypeTouches) {
         UITouch *touch = [touches.allObjects firstObject];
         CGPoint touchPoint = [touch locationInView:self];
-        
-        dispatch_semaphore_wait(_animatingCellsLock, DISPATCH_TIME_FOREVER);
-        NSInteger count = self.animatingCells.count;
-        for (int i = 0; i < count; i++) {
-            OCBarrageCell *barrageCell = [self.animatingCells objectAtIndex:i];
-            if ([barrageCell.layer.presentationLayer hitTest:touchPoint]) {
-                if (barrageCell.barrageDescriptor.touchAction) {
-                    barrageCell.barrageDescriptor.touchAction(barrageCell.barrageDescriptor);
-                }
-                if (barrageCell.barrageDescriptor.cellTouchedAction) {
-                    barrageCell.barrageDescriptor.cellTouchedAction(barrageCell.barrageDescriptor, barrageCell);
-                }
-                break;
-            }
-        }
-        dispatch_semaphore_signal(_animatingCellsLock);
+		[self trigerActionWithPoint:touchPoint];
     }
+}
+
+- (void)trigerActionWithPoint:(CGPoint)touchPoint
+{
+	dispatch_semaphore_wait(_animatingCellsLock, DISPATCH_TIME_FOREVER);
+	NSInteger count = self.animatingCells.count;
+	for (int i = 0; i < count; i++) {
+		OCBarrageCell *barrageCell = [self.animatingCells objectAtIndex:i];
+		if ([barrageCell.layer.presentationLayer hitTest:touchPoint]) {
+			if (barrageCell.barrageDescriptor.touchAction) {
+				barrageCell.barrageDescriptor.touchAction(barrageCell.barrageDescriptor);
+			}
+			if (barrageCell.barrageDescriptor.cellTouchedAction) {
+				barrageCell.barrageDescriptor.cellTouchedAction(barrageCell.barrageDescriptor, barrageCell);
+			}
+			break;
+		}
+	}
+	dispatch_semaphore_signal(_animatingCellsLock);
 }
 
 #pragma mark ----- getter

@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, OCBarrageRenderStatus) {
 
 - (nullable OCBarrageCell *)dequeueReusableCellWithClass:(Class)barrageCellClass;
 - (void)fireBarrageCell:(OCBarrageCell *)barrageCell;
+- (void)trigerActionWithPoint:(CGPoint)touchPoint;
 
 - (void)start;
 - (void)pause;
