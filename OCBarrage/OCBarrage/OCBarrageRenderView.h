@@ -12,25 +12,25 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, OCBarrageRenderStatus) {
-    OCBarrageRenderStoped = 0,
-    OCBarrageRenderStarted,
-    OCBarrageRenderPaused
+	OCBarrageRenderStoped = 0,
+	OCBarrageRenderStarted,
+	OCBarrageRenderPaused
 };
 
 @interface OCBarrageRenderView : UIView <CAAnimationDelegate> {
-    NSMutableArray<OCBarrageCell *> *_animatingCells;
-    NSMutableArray<OCBarrageCell *> *_idleCells;
-    dispatch_semaphore_t _animatingCellsLock;
-    dispatch_semaphore_t _idleCellsLock;
-    dispatch_semaphore_t _trackInfoLock;
-    OCBarrageCell *_lastestCell;
-    UIView *_lowPositionView;
-    UIView *_middlePositionView;
-    UIView *_highPositionView;
-    UIView *_veryHighPositionView;
-    BOOL _autoClear;
-    OCBarrageRenderStatus _renderStatus;
-    NSMutableDictionary *_trackNextAvailableTime;
+	NSMutableArray<OCBarrageCell *> *_animatingCells;
+	NSMutableArray<OCBarrageCell *> *_idleCells;
+	dispatch_semaphore_t _animatingCellsLock;
+	dispatch_semaphore_t _idleCellsLock;
+	dispatch_semaphore_t _trackInfoLock;
+	OCBarrageCell *_lastestCell;
+	UIView *_lowPositionView;
+	UIView *_middlePositionView;
+	UIView *_highPositionView;
+	UIView *_veryHighPositionView;
+	BOOL _autoClear;
+	OCBarrageRenderStatus _renderStatus;
+	NSMutableDictionary *_trackNextAvailableTime;
 }
 
 @property (nonatomic, strong, readonly) NSMutableArray<OCBarrageCell *> *animatingCells;
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, OCBarrageRenderStatus) {
 
 - (nullable OCBarrageCell *)dequeueReusableCellWithClass:(Class)barrageCellClass;
 - (void)fireBarrageCell:(OCBarrageCell *)barrageCell;
-- (void)trigerActionWithPoint:(CGPoint)touchPoint;
+- (BOOL)trigerActionWithPoint:(CGPoint)touchPoint;
 
 - (void)start;
 - (void)pause;
