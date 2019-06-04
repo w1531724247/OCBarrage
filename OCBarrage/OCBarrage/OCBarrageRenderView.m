@@ -271,7 +271,7 @@
         if (renderHeight < 0) {
             renderHeight = cellHeight;
         }
-
+        
         int trackCount = floorf(renderHeight/cellHeight);
         int trackIndex = arc4random_uniform(trackCount);//用户改变行高(比如弹幕文字大小不会引起显示bug, 因为虽然是同一个类, 但是trackCount变小了, 所以不会出现trackIndex*cellHeight超出屏幕边界的情况)
         
@@ -524,23 +524,34 @@
     if (event.type == UIEventTypeTouches) {
         UITouch *touch = [touches.allObjects firstObject];
         CGPoint touchPoint = [touch locationInView:self];
-        
-        dispatch_semaphore_wait(_animatingCellsLock, DISPATCH_TIME_FOREVER);
-        NSInteger count = self.animatingCells.count;
-        for (int i = 0; i < count; i++) {
-            OCBarrageCell *barrageCell = [self.animatingCells objectAtIndex:i];
-            if ([barrageCell.layer.presentationLayer hitTest:touchPoint]) {
-                if (barrageCell.barrageDescriptor.touchAction) {
-                    barrageCell.barrageDescriptor.touchAction(barrageCell.barrageDescriptor);
-                }
-                if (barrageCell.barrageDescriptor.cellTouchedAction) {
-                    barrageCell.barrageDescriptor.cellTouchedAction(barrageCell.barrageDescriptor, barrageCell);
-                }
-                break;
-            }
-        }
-        dispatch_semaphore_signal(_animatingCellsLock);
+        [self trigerActionWithPoint:touchPoint];
     }
+}
+
+- (BOOL)trigerActionWithPoint:(CGPoint)touchPoint
+{
+    dispatch_semaphore_wait(_animatingCellsLock, DISPATCH_TIME_FOREVER);
+    
+    BOOL anyTriger = NO;
+    NSEnumerator *enumerator = [self.animatingCells reverseObjectEnumerator];
+    OCBarrageCell *cell = nil;
+    while (cell = [enumerator nextObject]){
+        if ([cell.layer.presentationLayer hitTest:touchPoint]) {
+            if (cell.barrageDescriptor.touchAction) {
+                cell.barrageDescriptor.touchAction(cell.barrageDescriptor);
+                anyTriger = YES;
+            }
+            if (cell.barrageDescriptor.cellTouchedAction) {
+                cell.barrageDescriptor.cellTouchedAction(cell.barrageDescriptor, cell);
+                anyTriger = YES;
+            }
+            break;
+        }
+    }
+    
+    dispatch_semaphore_signal(_animatingCellsLock);
+    
+    return anyTriger;
 }
 
 #pragma mark ----- getter
